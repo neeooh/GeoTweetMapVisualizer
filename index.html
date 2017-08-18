@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <title>Simple Map</title>
+        <meta name="viewport" content="initial-scale=1.0"/>
+        <meta charset="utf-8"/>
+        <style>
+            html, body {
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            #map{
+                height: 100%;
+                width: 100%;
+            }
+        </style>
+        <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
+    </head>
+    <body>
+        <div id="map"></div>
+        
+        <script>
+            var map;
+            function initMap() {
+                // Map options
+                var options = {
+                    center: {lat: 54.584405, lng: -5.934065},
+                    zoom: 10
+                }
+                // New map
+                map = new google.maps.Map(document.getElementById('map'), options);
+
+                addMarker(54.584405, -5.934065);
+            }
+
+			//Read local .JSON file
+			$.getJSON("02_geolocation.json", function(json) {
+                   for(var i = 0; i < json.length; i++)
+                    {
+                       var coors = json[i].geo.coordinates;
+                       
+					   // add a marker to the map for each tweet
+                       addMarker(json[i]);
+                    }
+            });
+			
+			// Add Marker to the map
+            function addMarker(json){
+                console.log(json);
+                
+                var coors = json.geo.coordinates;
+                
+                var marker = new google.maps.Marker({
+                    position:{lat: coors[0], lng: coors[1]},
+                    map:map}
+                    );
+                
+				// Add InfoWindow
+				
+                var htmlContentInfoWindow =
+				"<small><a href="+getTweetURI(json)+">"+getTweetURI(json)+"</a></small>"+
+                "<p>"+json.geo.coordinates+"</p>"+
+                "<p>"+json.created_at+"</p>"+
+                "<h2>"+json.text+"</h2>"+
+                "<p>by <a href=https://twitter.com/"+json.user.screen_name+" target=_blank>"+json.user.screen_name+"</a></p>"+
+                "<p>location: "+json.user.location+"<br>description: "+json.user.description+"</p>";
+
+                var infoWindow = new google.maps.InfoWindow({
+                    content: htmlContentInfoWindow
+                    });
+
+                marker.addListener('click', function(){
+                    infoWindow.open(map, marker);
+            });
+            }
+
+            function getTweetURI(tweet){
+				return "https://twitter.com/" + tweet.user.screen_name + "/status/" + tweet.id_str;
+			}
+            </script>
+    
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCz85Qt1iLaImiennRIfD-ip7Ik8nIy0HA&callback=initMap" async defer></script>
+    </body>
+</html>
