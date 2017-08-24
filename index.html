@@ -16,6 +16,7 @@
             }
         </style>
         <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCz85Qt1iLaImiennRIfD-ip7Ik8nIy0HA&callback=initMap" async defer></script>
     </head>
     <body>
         <div id="map"></div>
@@ -31,23 +32,25 @@
                 // New map
                 map = new google.maps.Map(document.getElementById('map'), options);
 
-                addMarker(54.584405, -5.934065);
-            }
-
-			//Read local .JSON file
-			$.getJSON("02_geolocation.json", function(json) {
+                //addMarker(54.584405, -5.934065);
+				
+				//Read local .JSON file
+				$.getJSON("02_geotagged_in_polygon.json", function(json) {
                    for(var i = 0; i < json.length; i++)
                     {
                        var coors = json[i].geo.coordinates;
-                       
+                       //alert("yo!");
 					   // add a marker to the map for each tweet
                        addMarker(json[i]);
                     }
             });
+            }
+
+			
 			
 			// Add Marker to the map
             function addMarker(json){
-                console.log(json);
+                //console.log(json);
                 
                 var coors = json.geo.coordinates;
                 
@@ -57,7 +60,6 @@
                     );
                 
 				// Add InfoWindow
-				
                 var htmlContentInfoWindow =
 				"<small><a href="+getTweetURI(json)+">"+getTweetURI(json)+"</a></small>"+
                 "<p>"+json.geo.coordinates+"</p>"+
@@ -79,7 +81,5 @@
 				return "https://twitter.com/" + tweet.user.screen_name + "/status/" + tweet.id_str;
 			}
             </script>
-    
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCz85Qt1iLaImiennRIfD-ip7Ik8nIy0HA&callback=initMap" async defer></script>
     </body>
 </html>
